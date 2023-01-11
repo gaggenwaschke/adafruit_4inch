@@ -97,7 +97,8 @@ public:
   virtual LENGTH get_height() const = 0;
 
   // Drawing
-  void draw_point(POINT Xpoint, POINT Ypoint, COLOR Color, DOT_PIXEL Dot_Pixel,
+  void draw_point(POINT Xpoint, POINT Ypoint, COLOR Color,
+                  DOT_PIXEL Dot_Pixel = DOT_PIXEL_1X1,
                   DOT_STYLE Dot_FillWay = DOT_FILL_AROUND);
   void draw_line(POINT Xstart, POINT Ystart, POINT Xend, POINT Yend,
                  COLOR Color, LINE_STYLE Line_Style = LINE_SOLID,
