@@ -1,6 +1,6 @@
 #pragma once
 
-#include "fonts.h"
+#include "font_type.hpp"
 
 using LENGTH = uint16_t; // The type of coordinate (unsigned short)
 
@@ -98,13 +98,15 @@ public:
 
   // Drawing
   void draw_point(POINT Xpoint, POINT Ypoint, COLOR Color, DOT_PIXEL Dot_Pixel,
-                  DOT_STYLE Dot_FillWay);
+                  DOT_STYLE Dot_FillWay = DOT_FILL_AROUND);
   void draw_line(POINT Xstart, POINT Ystart, POINT Xend, POINT Yend,
-                 COLOR Color, LINE_STYLE Line_Style, DOT_PIXEL Dot_Pixel);
+                 COLOR Color, LINE_STYLE Line_Style = LINE_SOLID,
+                 DOT_PIXEL Dot_Pixel = DOT_PIXEL_1X1);
   void draw_rectangle(POINT Xstart, POINT Ystart, POINT Xend, POINT Yend,
-                      COLOR Color, DRAW_FILL Filled, DOT_PIXEL Dot_Pixel);
+                      COLOR Color, DRAW_FILL Filled,
+                      DOT_PIXEL Dot_Pixel = DOT_PIXEL_1X1);
   void draw_circle(POINT X_Center, POINT Y_Center, LENGTH Radius, COLOR Color,
-                   DRAW_FILL Draw_Fill, DOT_PIXEL Dot_Pixel);
+                   DRAW_FILL Draw_Fill, DOT_PIXEL Dot_Pixel = DOT_PIXEL_1X1);
 
   // pic
   void disbitmap(POINT Xpoint, POINT Ypoint, const unsigned char *pMap,
@@ -112,11 +114,13 @@ public:
   void disgraymap(POINT Xpoint, POINT Ypoint, const unsigned char *pBmp);
 
   // Display string
-  void draw_char(POINT Xstart, POINT Ystart, const char Acsii_Char, sFONT *Font,
-                 COLOR Color_Background, COLOR Color_Foreground);
-  void draw_string(POINT Xstart, POINT Ystart, const char *pString, sFONT *Font,
-                   COLOR Color_Background, COLOR Color_Foreground);
-  void draw_number(POINT Xpoint, POINT Ypoint, int32_t Number, sFONT *Font,
+  void draw_char(POINT Xstart, POINT Ystart, const char Acsii_Char,
+                 const Font &font, COLOR Color_Background,
+                 COLOR Color_Foreground);
+  void draw_string(POINT Xstart, POINT Ystart, const char *pString,
+                   const Font &font, COLOR Color_Background,
+                   COLOR Color_Foreground);
+  void draw_number(POINT Xpoint, POINT Ypoint, int32_t Number, const Font &font,
                    COLOR Color_Background, COLOR Color_Foreground);
   // show
   void show_demo();

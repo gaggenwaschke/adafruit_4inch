@@ -1,12 +1,12 @@
-#include "adafruit_4inch_driver.hpp"
+#include "waveshare_4inch_driver.hpp"
 #include <Arduino.h>
 #include <SPI.h>
 #include <Wire.h>
 
-Adafruit_4inch::Adafruit_4inch(int pin_backlight, int pin_reset,
-                               int pin_chip_select, int pin_dc,
-                               uint16_t backlight_level,
-                               ScanDirection scan_direction)
+Waveshare_4inch::Waveshare_4inch(int pin_backlight, int pin_reset,
+                                 int pin_chip_select, int pin_dc,
+                                 uint16_t backlight_level,
+                                 ScanDirection scan_direction)
     : pin_backlight{pin_backlight}, pin_reset{pin_reset},
       pin_chip_select{pin_chip_select}, pin_dc{pin_dc},
       backlight_lvl{backlight_lvl}, scan_direction{scan_direction} {}
@@ -15,7 +15,7 @@ Adafruit_4inch::Adafruit_4inch(int pin_backlight, int pin_reset,
 function:
         Hardware reset
 *******************************************************************************/
-void Adafruit_4inch::reset() {
+void Waveshare_4inch::reset() {
   digitalWrite(pin_reset, HIGH);
   delay(500);
   digitalWrite(pin_reset, LOW);
@@ -24,7 +24,7 @@ void Adafruit_4inch::reset() {
   delay(500);
 }
 
-void Adafruit_4inch::write_backlight() {
+void Waveshare_4inch::write_backlight() {
   analogWrite(pin_backlight, backlight_lvl);
 }
 
@@ -33,7 +33,7 @@ function:
                 Write register address and data
 *******************************************************************************/
 
-void Adafruit_4inch::init_io() {
+void Waveshare_4inch::init_io() {
   pinMode(pin_chip_select, OUTPUT);
   pinMode(pin_reset, OUTPUT);
   pinMode(pin_dc, OUTPUT);
@@ -48,14 +48,14 @@ void Adafruit_4inch::init_io() {
   SPI.begin();
 }
 
-void Adafruit_4inch::write_reg(uint8_t Reg) {
+void Waveshare_4inch::write_reg(uint8_t Reg) {
   digitalWrite(pin_dc, LOW);
   digitalWrite(pin_chip_select, LOW);
   SPI.transfer(Reg);
   digitalWrite(pin_chip_select, HIGH);
 }
 
-void Adafruit_4inch::write_data(uint8_t Data) {
+void Waveshare_4inch::write_data(uint8_t Data) {
   digitalWrite(pin_dc, HIGH);
   digitalWrite(pin_chip_select, LOW);
   SPI.transfer(Data >> 8);
@@ -67,7 +67,7 @@ void Adafruit_4inch::write_data(uint8_t Data) {
 function:
                 Write register data
 *******************************************************************************/
-void Adafruit_4inch::write_all_data(uint16_t Data, uint32_t DataLen) {
+void Waveshare_4inch::write_all_data(uint16_t Data, uint32_t DataLen) {
   uint32_t i;
   digitalWrite(pin_dc, HIGH);
   digitalWrite(pin_chip_select, LOW);
@@ -82,7 +82,7 @@ void Adafruit_4inch::write_all_data(uint16_t Data, uint32_t DataLen) {
 function:
                 Common register initialization
 *******************************************************************************/
-void Adafruit_4inch::initialize_peripheral_registers() {
+void Waveshare_4inch::initialize_peripheral_registers() {
   write_reg(0XF9);
   write_data(0x00);
   write_data(0x08);
@@ -192,7 +192,7 @@ void Adafruit_4inch::initialize_peripheral_registers() {
 function:
         initialization
 ********************************************************************************/
-void Adafruit_4inch::init() {
+void Waveshare_4inch::init() {
   init_io();
 
   // Hardware reset
@@ -223,8 +223,8 @@ parameter:
         Xend    :   X direction end coordinates
         Yend    :   Y direction end coordinates
 ********************************************************************************/
-void Adafruit_4inch::set_window(POINT Xstart, POINT Ystart, POINT Xend,
-                                POINT Yend) {
+void Waveshare_4inch::set_window(POINT Xstart, POINT Ystart, POINT Xend,
+                                 POINT Yend) {
   // set the X coordinates
   write_reg(0x2A);
   write_data(Xstart >>
@@ -249,7 +249,7 @@ parameter:
         xStart :   X direction Start coordinates
         xEnd   :   X direction end coordinates
 ********************************************************************************/
-void Adafruit_4inch::set_cursor(POINT Xpoint, POINT Ypoint) {
+void Waveshare_4inch::set_cursor(POINT Xpoint, POINT Ypoint) {
   set_window(Xpoint, Ypoint, Xpoint, Ypoint);
 }
 
@@ -259,7 +259,7 @@ parameter:
                 Color  :   Set show color,16-bit depth
 ********************************************************************************/
 // static void set_color(LENGTH Dis_Width, LENGTH Dis_Height, COLOR Color ){
-void Adafruit_4inch::set_color(COLOR Color, POINT Xpoint, POINT Ypoint) {
+void Waveshare_4inch::set_color(COLOR Color, POINT Xpoint, POINT Ypoint) {
   write_all_data(Color, (uint32_t)Xpoint * (uint32_t)Ypoint);
 }
 
@@ -270,8 +270,8 @@ parameter:
         Ypoint :   The y coordinate of the point
         Color  :   Set the color
 ********************************************************************************/
-void Adafruit_4inch::set_point_i_color(POINT Xpoint, POINT Ypoint,
-                                       COLOR Color) {
+void Waveshare_4inch::set_point_i_color(POINT Xpoint, POINT Ypoint,
+                                        COLOR Color) {
   if ((Xpoint <= width) && (Ypoint <= height)) {
     set_cursor(Xpoint, Ypoint);
     set_color(Color, 1, 1);
@@ -287,23 +287,23 @@ parameter:
         Yend   :   End point coordinates
         Color  :   Set the color
 ********************************************************************************/
-void Adafruit_4inch::set_area_i_color(POINT Xstart, POINT Ystart, POINT Xend,
-                                      POINT Yend, COLOR Color) {
+void Waveshare_4inch::set_area_i_color(POINT Xstart, POINT Ystart, POINT Xend,
+                                       POINT Yend, COLOR Color) {
   if ((Xend > Xstart) && (Yend > Ystart)) {
     set_window(Xstart, Ystart, Xend, Yend);
     set_color(Color, Xend - Xstart, Yend - Ystart);
   }
 }
 
-void Adafruit_4inch::clear(COLOR Color) {
+void Waveshare_4inch::clear(COLOR Color) {
   set_area_i_color(0, 0, width, height, Color);
 }
 
-LENGTH Adafruit_4inch::get_width() const { return width; }
+LENGTH Waveshare_4inch::get_width() const { return width; }
 
-LENGTH Adafruit_4inch::get_height() const { return height; }
+LENGTH Waveshare_4inch::get_height() const { return height; }
 
-void Adafruit_4inch::write_gram_scan_way() {
+void Waveshare_4inch::write_gram_scan_way() {
   uint16_t MemoryAccessReg_Data = 0; // addr:0x36
   uint16_t DisFunReg_Data = 0;       // addr:0xB6
 

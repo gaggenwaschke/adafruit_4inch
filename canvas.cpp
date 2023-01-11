@@ -1,5 +1,6 @@
 #include "canvas.hpp"
 #include "Arduino.h"
+#include "fonts.hpp"
 
 /******************************************************************************
   function:	Draw Point(Xpoint, Ypoint) Fill the color
@@ -199,16 +200,16 @@ void Canvas::draw_circle(POINT X_Center, POINT Y_Center, LENGTH Radius,
         Color_Foreground : Select the foreground color of the English character
 ******************************************************************************/
 void Canvas::draw_char(POINT Xpoint, POINT Ypoint, const char Acsii_Char,
-                       sFONT *Font, COLOR Color_Background,
+                       const Font &font, COLOR Color_Background,
                        COLOR Color_Foreground) {
   POINT Page, Column;
 
-  uint32_t Char_Offset = (Acsii_Char - ' ') * Font->Height *
-                         (Font->Width / 8 + (Font->Width % 8 ? 1 : 0));
-  const unsigned char *ptr = &Font->table[Char_Offset];
+  uint32_t Char_Offset = (Acsii_Char - ' ') * font.Height *
+                         (font.Width / 8 + (font.Width % 8 ? 1 : 0));
+  const unsigned char *ptr = &font.table[Char_Offset];
 
-  for (Page = 0; Page < Font->Height; Page++) {
-    for (Column = 0; Column < Font->Width; Column++) {
+  for (Page = 0; Page < font.Height; Page++) {
+    for (Column = 0; Column < font.Width; Column++) {
 
       // To determine whether the font background color and screen background
       // color is consistent
@@ -230,7 +231,7 @@ void Canvas::draw_char(POINT Xpoint, POINT Ypoint, const char Acsii_Char,
       if (Column % 8 == 7)
         ptr++;
     } /* Write a line */
-    if (Font->Width % 8 != 0)
+    if (font.Width % 8 != 0)
       ptr++;
   } /* Write all */
 }
@@ -246,7 +247,7 @@ displayed Font             ：A structure pointer that displays a character size
         Color_Foreground : Select the foreground color of the English character
 ******************************************************************************/
 void Canvas::draw_string(POINT Xstart, POINT Ystart, const char *pString,
-                         sFONT *Font, COLOR Color_Background,
+                         const Font &font, COLOR Color_Background,
                          COLOR Color_Foreground) {
   POINT Xpoint = Xstart;
   POINT Ypoint = Ystart;
@@ -254,24 +255,24 @@ void Canvas::draw_string(POINT Xstart, POINT Ystart, const char *pString,
   while (*pString != '\0') {
     // if X direction filled , reposition to(Xstart,Ypoint),Ypoint is Y
     // direction plus the height of the character
-    if ((Xpoint + Font->Width) > get_width()) {
+    if ((Xpoint + font.Width) > get_width()) {
       Xpoint = Xstart;
-      Ypoint += Font->Height;
+      Ypoint += font.Height;
     }
 
     // If the Y direction is full, reposition to(Xstart, Ystart)
-    if ((Ypoint + Font->Height) > get_height()) {
+    if ((Ypoint + font.Height) > get_height()) {
       Xpoint = Xstart;
       Ypoint = Ystart;
     }
-    draw_char(Xpoint, Ypoint, *pString, Font, Color_Background,
+    draw_char(Xpoint, Ypoint, *pString, font, Color_Background,
               Color_Foreground);
 
     // The next character of the address
     pString++;
 
     // The next word of the abscissa increases the font of the broadband
-    Xpoint += Font->Width;
+    Xpoint += font.Width;
   }
 }
 
@@ -287,7 +288,7 @@ void Canvas::draw_string(POINT Xstart, POINT Ystart, const char *pString,
 ******************************************************************************/
 #define ARRAY_LEN 255
 void Canvas::draw_number(POINT Xpoint, POINT Ypoint, int32_t Number,
-                         sFONT *Font, COLOR Color_Background,
+                         const Font &font, COLOR Color_Background,
                          COLOR Color_Foreground) {
 
   int16_t Num_Bit = 0, Str_Bit = 0;
@@ -313,7 +314,7 @@ void Canvas::draw_number(POINT Xpoint, POINT Ypoint, int32_t Number,
   }
 
   // show
-  draw_string(Xpoint, Ypoint, (const char *)pStr, Font, Color_Background,
+  draw_string(Xpoint, Ypoint, (const char *)pStr, font, Color_Background,
               Color_Foreground);
 }
 
@@ -403,8 +404,8 @@ void Canvas::show_demo() {
   draw_circle(50, 250, 30, CYAN, DRAW_FULL, DOT_PIXEL_DFT);
   draw_circle(get_width() - 50, 250, 30, CYAN, DRAW_FULL, DOT_PIXEL_DFT);
 
-  draw_string(80, 80, "WaveShare Electronic", &Font24, LCD_BACKGROUND, BLUE);
-  draw_string(80, 120, "3.5inch TFTLCD", &Font20, RED, BLUE);
+  draw_string(80, 80, "WaveShare Electronic", Font24, LCD_BACKGROUND, BLUE);
+  draw_string(80, 120, "3.5inch TFTLCD", Font20, RED, BLUE);
 
-  draw_number(80, 150, 1234567890, &Font16, LCD_BACKGROUND, BLUE);
+  draw_number(80, 150, 1234567890, Font16, LCD_BACKGROUND, BLUE);
 }

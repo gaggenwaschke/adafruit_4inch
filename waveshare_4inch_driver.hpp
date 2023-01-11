@@ -8,11 +8,11 @@ function:
                         Macro definition variable name
 ********************************************************************************/
 
-class Adafruit_4inch : public Canvas {
+class Waveshare_4inch : public Canvas {
 public:
-  Adafruit_4inch(int pin_backlight, int pin_reset, int pin_chip_select,
-                 int pin_dc, uint16_t backlight_lvl = 100,
-                 ScanDirection scan_direction = ScanDirection::D2U_L2R);
+  Waveshare_4inch(int pin_backlight, int pin_reset, int pin_chip_select,
+                  int pin_dc, uint16_t backlight_lvl = 100,
+                  ScanDirection scan_direction = ScanDirection::D2U_L2R);
 
   void init() override;
 
